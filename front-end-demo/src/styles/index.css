@@ -1,0 +1,14 @@
+@import 'dark.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --c-bg: #fff;
+}
+
+html {
+  background: var(--c-bg);
+  transition: background 0.1s linear !important;
+}

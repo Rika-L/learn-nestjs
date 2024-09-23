@@ -10,10 +10,14 @@ import {
   Query,
   Put,
   Headers,
+  Session,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+
+import * as svgCaptcha from 'svg-captcha';
 
 @Controller('user')
 export class UserController {
@@ -42,5 +46,32 @@ export class UserController {
     return {
       code: 200,
     };
+  }
+
+  @Get('captcha')
+  createCaptcha(@Session() session, @Res() res) {
+    const { text, data } = svgCaptcha.create({
+      size: 4,
+      fontSize: 50,
+      width: 100,
+      height: 40,
+      background: '#f0f0f0',
+    });
+    session.code = text;
+    res.type('image/svg+xml');
+    res.send(data);
+  }
+  @Post('create')
+  createUser(@Session() session, @Body() body) {
+    console.log(session.code, body);
+    if (session.code.toLocaleLowerCase() === body?.code?.toLocaleLowerCase()) {
+      return {
+        message: '验证码正确',
+      };
+    } else {
+      return {
+        message: '验证码错误',
+      };
+    }
   }
 }
